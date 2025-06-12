@@ -27,9 +27,9 @@ service_medium = fuzz.trimf(service_range, [0, 5, 10])
 service_high = fuzz.trimf(service_range, [5, 10, 10])
 
 # Tip
-tip_low = fuzz.trimf(tip_range, [0, 0, 13])
-tip_medium = fuzz.trimf(tip_range, [0, 13, 25])
-tip_high = fuzz.trimf(tip_range, [13, 25, 25])
+tip_low = fuzz.trimf(tip_range, [0, 0, 12.5])
+tip_medium = fuzz.trimf(tip_range, [0, 12.5, 25])
+tip_high = fuzz.trimf(tip_range, [12.5, 25, 25])
 
 # --- User inputs ---
 col1, col2 = st.columns(2)
@@ -38,12 +38,15 @@ with col1:
 with col2:
     service_score = st.slider("Rate the *Service*", 0, 10, 5, 1)
 
+
 # --- Membership value calculations ---
 def get_membership_values(x_range, functions, value):
     return [fuzz.interp_membership(x_range, mf, value) for mf in functions]
 
+
 quality_membership = get_membership_values(quality_range, [quality_low, quality_medium, quality_high], quality_score)
 service_membership = get_membership_values(service_range, [service_low, service_medium, service_high], service_score)
+
 
 # --- Membership plot function ---
 def plot_membership(x, functions, score, title):
@@ -61,6 +64,8 @@ def plot_membership(x, functions, score, title):
     # Minimalist styling
     ax.set_title(title, fontsize=14, weight='bold')
     ax.set_ylim([-0.05, 1.05])
+    ax.set_xlim([min(x), max(x)])
+    ax.set_xticks(np.arange(min(x), max(x)+1, 1))
     ax.grid(True, which='both', linestyle='--', linewidth=0.4, alpha=0.3)
 
     ax.spines['top'].set_visible(False)
@@ -71,6 +76,8 @@ def plot_membership(x, functions, score, title):
 
     fig.tight_layout()
     return fig
+
+
 
 # --- Show plots and membership values ---
 col3, col4 = st.columns(2)
@@ -129,6 +136,7 @@ def plot_fuzzy_output_activity(x_tip, tip_lo, tip_md, tip_hi,
 
     ax.set_title("🔥 Output Membership Activity (Rule Contribution)", fontsize=13, weight='bold')
     ax.set_ylim([-0.05, 1.05])
+    ax.set_xticks(np.arange(min(x_tip), max(x_tip) + 0.1, 2.5))
     ax.grid(True, linestyle='--', linewidth=0.4, alpha=0.3)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -184,6 +192,7 @@ def plot_final_tip_output(x_tip, tip_lo, tip_md, tip_hi, final_tip):
     # Styling
     ax.set_title("Final Tip Output (Defuzzified)", fontsize=13, weight='bold')
     ax.set_ylim([-0.05, 1.05])
+    ax.set_xticks(np.arange(min(x_tip), max(x_tip) + 0.1, 2.5))
     ax.grid(True, linestyle='--', linewidth=0.4, alpha=0.3)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
